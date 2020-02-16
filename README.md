@@ -1,7 +1,7 @@
-# PokedexAlexaSkill
-PokedexAlexaSkill is an Alexa skill built with Node.js that enables users to look up a Pokédex description for any species of Pokémon.
+# PokedexQuizSkill
+PokedexQuizSkill is an Alexa skill built with Node.js that enables users to play a quiz game where they attempt to guess the name of a species of Pokémon given a corresponding Pokédex description.
 
-PokedexAlexaSkill is available for free on the Alexa Skill Store as [Pokedex (Unofficial)](https://www.amazon.com/Matthew-Chartier-Pokedex-Unofficial/dp/B01JVU935W). Try it out on any Alexa-enabled device.
+PokedexQuizSkill is available for free on the Alexa Skill Store as [Pokedex Quiz (Unofficial)](https://www.amazon.com/Matthew-Chartier-Pokedex-Quiz-Unofficial/dp/B0721G7JVM). Try it out on any Alexa-enabled device!
 
 ## Setup
 
@@ -13,7 +13,7 @@ yarn install
 ```
 
 ### Build
-The 'build' script runs the TypeScript compiles and outputs build artifacts into the 'dist' directory.
+The 'build' script runs the TypeScript compiler and outputs build artifacts into the 'dist' directory.
 
 ```
 yarn run build
