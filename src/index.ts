@@ -7,8 +7,6 @@ import { AmazonStopIntentHandler } from "./handlers/AmazonStopIntentHandler";
 import { SessionEndedHandler } from "./handlers/SessionEndedHandler";
 import { CustomErrorHandler } from "./handlers/CustomErrorHandler";
 import { AmazonHelpIntentHandler } from "./handlers/AmazonHelpIntentHandler";
-import { LookupByNameIntentHandler } from "./handlers/LookupByNameIntentHandler";
-import { LookupByNumberIntentHandler } from "./handlers/LookupByNumberIntentHandler";
 
 function buildLambdaSkill(): LambdaHandler {
     const skillBuilder = SkillBuilders.standard();
@@ -18,8 +16,6 @@ function buildLambdaSkill(): LambdaHandler {
             new AmazonHelpIntentHandler(),
             new AmazonStopIntentHandler(),
             new LaunchRequestHandler(),
-            new LookupByNameIntentHandler(),
-            new LookupByNumberIntentHandler(),
             new SessionEndedHandler()
         )
         .addErrorHandlers(new CustomErrorHandler())

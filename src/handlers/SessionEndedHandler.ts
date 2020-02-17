@@ -10,8 +10,7 @@ export class SessionEndedHandler extends RequestHandlerBase {
     }
 
     async handle(handlerInput: HandlerInput): Promise<Response> {
-        const responseBuilder = handlerInput.responseBuilder;
-        return responseBuilder
+        return handlerInput.responseBuilder
             .speak("Good luck on your Pokemon journey!")
             .withShouldEndSession(true)
             .getResponse();

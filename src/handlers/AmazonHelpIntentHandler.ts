@@ -13,13 +13,6 @@ export class AmazonHelpIntentHandler extends RequestHandlerBase {
     async handle(handlerInput: HandlerInput): Promise<Response> {
         console.log("Handling AMAZON.HelpIntent.");
 
-        const responseBuilder = handlerInput.responseBuilder;
-        
-        const welcome = "Welcome to Pokedex Quiz!";
-        const instructions = "You can say 'give me a quiz', or, you can say exit.";
-        return responseBuilder
-            .speak(`${welcome} ${instructions}`)
-            .reprompt(instructions)
-            .getResponse();
+        return this.buildHelpResponse(handlerInput);
     }
 }
