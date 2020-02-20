@@ -38,19 +38,22 @@ export abstract class RequestHandlerBase implements RequestHandler {
     }
 
     getSessionState(handlerInput: HandlerInput): SessionState | null {
-        if (!handlerInput.requestEnvelope || !handlerInput.requestEnvelope.session || !handlerInput.requestEnvelope.session.attributes) {
+        if (!handlerInput.requestEnvelope || !handlerInput.requestEnvelope.session || 
+            !handlerInput.requestEnvelope.session.attributes) {
             return null;
         }
 
         return handlerInput.requestEnvelope.session.attributes.state;
     }
 
-    updateSessionState(handlerInput: HandlerInput, sessionState: SessionState): void {
-        if (!handlerInput.requestEnvelope || !handlerInput.requestEnvelope.session || !handlerInput.requestEnvelope.session.attributes) {
-            return;
+    updateSessionState(handlerInput: HandlerInput, sessionState: SessionState): SessionState | null {
+        if (!handlerInput.requestEnvelope || !handlerInput.requestEnvelope.session || 
+            !handlerInput.requestEnvelope.session.attributes) {
+            return null;
         }
 
         handlerInput.requestEnvelope.session.attributes.state = sessionState;
+        return sessionState;
     }
 
     abstract handle(handlerInput: HandlerInput): Promise<Response>;

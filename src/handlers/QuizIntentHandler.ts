@@ -2,20 +2,23 @@ import { HandlerInput } from "ask-sdk";
 import { Response, IntentRequest } from "ask-sdk-model";
 import { RequestHandlerBase } from "./RequestHandlerBase";
 import PokemonDatabase from "../database/PokemonDatabase";
-import Pokemon from "../models/Pokemon";
 import SessionState from "../models/SessionState";
 import QuestionBuilder from "../QuestionBuilder";
 import Question from "../models/Question";
+import QuizGenerator from "../QuizGenerator";
 
 export class QuizIntentHandler extends RequestHandlerBase {
-    private database: PokemonDatabase;
+    private readonly NumQuestions: number = 5;
     
+    private quizGenerator: QuizGenerator;
+
     constructor() {
         super({
-            IntentName: "LookupByNameIntent",
+            IntentName: "QuizIntent",
             RequestType: "IntentRequest"
         });
-        this.database = new PokemonDatabase();
+
+        this.quizGenerator = new QuizGenerator(new PokemonDatabase(), new QuestionBuilder());
     }
 
     async handle(handlerInput: HandlerInput): Promise<Response> {
@@ -27,34 +30,36 @@ export class QuizIntentHandler extends RequestHandlerBase {
             throw "Invalid IntentRequest";
         }
 
-        const state: SessionState | null = this.getSessionState(handlerInput);
+        let state: SessionState | null = this.getSessionState(handlerInput);
         if (state) {
             // If there is already session state, we shouldn't be starting a new quiz.
             // Reprompt with the current question.
             return responseBuilder
                 .speak("You've already started a quiz.")
-                .reprompt(state.CurrentQuestion.Prompt)
+                .reprompt(this.getCurrentQuestion(state))
                 .getResponse();
         }
 
-        // TODO: Avoid repeating a Pokemon in the same quiz
-        const pokemonDatabase: PokemonDatabase = new PokemonDatabase();
-        const pokemon: Pokemon = await pokemonDatabase.GetRandomPokemon();
-        const questionBuilder: QuestionBuilder = new QuestionBuilder();
-        const question: Question = questionBuilder.Build(pokemon);
+        const questions: Question[] = await this.quizGenerator.Generate(this.NumQuestions);
 
         // Create initial session state to attach to response
-        this.updateSessionState(handlerInput, {
+        state = this.updateSessionState(handlerInput, {
             CorrectAnswers: 0,
-            CurrentQuestion: question,
-            NumberOfQuestions: 5,
+            Questions: questions,
             QuestionsAnswered: 0
         });
+        if (!state) {
+            throw "Failed to update state.";
+        }
 
         // Ask the first question
         return responseBuilder
             .speak(`Here's question 1.`)
-            .reprompt(question.Prompt)
+            .reprompt(this.getCurrentQuestion(state))
             .getResponse();
+    }
+
+    private getCurrentQuestion(state: SessionState): string {
+        return state.Questions[state.QuestionsAnswered].Prompt;
     }
 }

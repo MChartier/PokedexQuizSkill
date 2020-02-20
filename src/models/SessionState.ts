@@ -2,7 +2,6 @@ import Question from "./Question";
 
 export default interface SessionState {
     CorrectAnswers: number;
-    CurrentQuestion: Question;
-    NumberOfQuestions: number;
+    Questions: Question[];
     QuestionsAnswered: number;
 }

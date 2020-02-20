@@ -1,5 +1,5 @@
 import Pokemon from "../models/Pokemon";
-import { DocumentClient, GetItemOutput } from "aws-sdk/clients/dynamodb";
+import { DocumentClient, GetItemOutput, BatchGetItemOutput } from "aws-sdk/clients/dynamodb";
 
 export default class PokemonDatabase {
 
@@ -22,6 +22,11 @@ export default class PokemonDatabase {
     async GetPokemonByNumber(pokemonNumber: number): Promise<Pokemon> {
         console.log(`GetPokemonByNumber: ${pokemonNumber}`);
         return this.getPokemonByNumber(pokemonNumber);
+    }
+
+    async GetPokemonByNumbers(pokemonNumbers: number[]): Promise<Pokemon[]> {
+        console.log(`GetPokemonByNumber: ${pokemonNumbers}`);
+        return this.getPokemonByNumbers(pokemonNumbers);
     }
 
     async GetRandomPokemon(): Promise<Pokemon> {
@@ -69,6 +74,34 @@ export default class PokemonDatabase {
         }
 
         return this.rowToPokemon(response.Item);
+    }
+
+    private async getPokemonByNumbers(pokemonNumbers: number[]): Promise<Pokemon[]> {
+        const keys: object[] = [];
+        for (const num of pokemonNumbers) {
+            keys.push({
+                "Id": { "N": num }
+            });
+        }
+        
+        const params = {
+            RequestItems: {
+                "PokemonDescriptions": {
+                    Keys: keys
+                }
+            }
+        };
+
+        const response: BatchGetItemOutput = await this.docClient.batchGet(params).promise();
+        if (!response || !response.Responses) {
+            console.log("Invalid response from DynamoDB");
+            console.log(response);
+            
+            throw response;
+        }
+
+        const items = Array.from(response.Responses["PokemonDescriptions"].values());
+        return items.map(row => this.rowToPokemon(row));
     }
 
     private rowToPokemon(row: any): Pokemon {
