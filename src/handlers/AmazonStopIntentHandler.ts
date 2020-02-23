@@ -2,6 +2,9 @@ import { HandlerInput } from "ask-sdk";
 import { Response } from "ask-sdk-model";
 import { RequestHandlerBase } from "./RequestHandlerBase";
 
+/**
+ * Alexa intent handler for AMAZON.StopIntent.
+ */
 export class AmazonStopIntentHandler extends RequestHandlerBase {
     constructor() {
         super({

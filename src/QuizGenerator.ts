@@ -7,8 +7,12 @@ import Pokemon from "./models/Pokemon";
  * Generates a quiz consisting of a set of Pokemon identification questions.
  */
 export default class QuizGenerator {
-    private pokemonDatabase: PokemonDatabase;
-    private questionBuilder: QuestionBuilder;
+    // Limit questions to Gen 1 Pokemon
+    // TODO: Provide options to the user to select generations to include
+    private readonly MaxPokemonNumber = 151;
+
+    private readonly pokemonDatabase: PokemonDatabase;
+    private readonly questionBuilder: QuestionBuilder;
     
     /**
      * Constructs an instance of QuizGenerator.
@@ -40,13 +44,11 @@ export default class QuizGenerator {
      * @param count The number of unique Pokemon numbers to generate.
      */
     private getPokemonNumbers(count: number): number[] {
-        const MaxPokemonNumber = 807;
-
         const set: Set<number> = new Set<number>();
         while (set.size < count) {
             // Likelihood of collisions is quite low, so we just blindly choose random numbers in the range until we
             // have enough unique values.
-            const randomPokemonNumber = 1 + Math.floor(Math.random() * MaxPokemonNumber);
+            const randomPokemonNumber = 1 + Math.floor(Math.random() * this.MaxPokemonNumber);
             if (!set.has(randomPokemonNumber)) {
                 set.add(randomPokemonNumber);
             }

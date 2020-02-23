@@ -7,6 +7,9 @@ export interface HandlerConfig {
     IntentName?: string | undefined;
 }
 
+/**
+ * Abstract base class for Alexa intent handlers for PokedexQuizSkill.
+ */
 export abstract class RequestHandlerBase implements RequestHandler {
     private _requestType: string;
     private _intentName: string | undefined;

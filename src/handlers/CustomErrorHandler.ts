@@ -1,6 +1,9 @@
 import { HandlerInput, ErrorHandler } from "ask-sdk";
 import { Response } from "ask-sdk-model";
 
+/**
+ * Alexa error handler.
+ */
 export class CustomErrorHandler implements ErrorHandler {
     canHandle(handlerInput: HandlerInput): boolean {
         return true;

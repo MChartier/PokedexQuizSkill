@@ -2,6 +2,9 @@ import { HandlerInput } from "ask-sdk";
 import { Response } from "ask-sdk-model";
 import { RequestHandlerBase } from "./RequestHandlerBase";
 
+/**
+ * Alexa intent handler for AMAZON.HelpIntent.
+ */
 export class AmazonHelpIntentHandler extends RequestHandlerBase {
     constructor() {
         super({
@@ -11,8 +14,7 @@ export class AmazonHelpIntentHandler extends RequestHandlerBase {
     }
 
     async handle(handlerInput: HandlerInput): Promise<Response> {
-        console.log("Handling AMAZON.HelpIntent.");
-
+        console.trace();
         return this.buildHelpResponse(handlerInput);
     }
 }

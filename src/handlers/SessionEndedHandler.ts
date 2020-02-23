@@ -2,6 +2,9 @@ import { HandlerInput } from "ask-sdk";
 import { Response } from "ask-sdk-model";
 import { RequestHandlerBase } from "./RequestHandlerBase";
 
+/**
+ * Alexa session ended handler for PokedexQuizSkill.
+ */
 export class SessionEndedHandler extends RequestHandlerBase {
     constructor() {
         super({

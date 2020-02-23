@@ -17,5 +17,9 @@ export default interface Pokemon {
      */
     Descriptions: string[];
 
+    /**
+     * Additional descriptor for this Pokemon species.
+     * E.g., Squirtle's genus is "Tiny Turtle Pokemon".
+     */
     Genus: string;
 }

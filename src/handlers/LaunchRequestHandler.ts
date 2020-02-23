@@ -2,6 +2,9 @@ import { HandlerInput } from "ask-sdk";
 import { Response } from "ask-sdk-model";
 import { RequestHandlerBase } from "./RequestHandlerBase";
 
+/**
+ * Alexa launch request handler.
+ */
 export class LaunchRequestHandler extends RequestHandlerBase {
     constructor() {
         super({
@@ -10,13 +13,7 @@ export class LaunchRequestHandler extends RequestHandlerBase {
     }
 
     async handle(handlerInput: HandlerInput): Promise<Response> {
-        return handlerInput.responseBuilder
-            .speak("Welcome to Pokedex Quiz!")
-            .addDelegateDirective({
-                name: 'QuizIntent',
-                confirmationStatus: 'NONE',
-                slots: {}
-             })
-            .getResponse();
+        console.trace();
+        return this.buildHelpResponse(handlerInput);
     }
 }

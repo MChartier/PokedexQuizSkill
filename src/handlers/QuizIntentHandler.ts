@@ -6,11 +6,16 @@ import SessionState from "../models/SessionState";
 import QuestionBuilder from "../QuestionBuilder";
 import Question from "../models/Question";
 import QuizGenerator from "../QuizGenerator";
+import QuizProctor from "../QuizProctor";
 
+/**
+ * Alexa intent handler for QuizIntent.
+ */
 export class QuizIntentHandler extends RequestHandlerBase {
-    private readonly NumQuestions: number = 5;
+    private readonly NumQuestions = 5;
     
-    private quizGenerator: QuizGenerator;
+    private readonly quizGenerator: QuizGenerator;
+    private readonly quizProctor: QuizProctor;
 
     constructor() {
         super({
@@ -19,26 +24,29 @@ export class QuizIntentHandler extends RequestHandlerBase {
         });
 
         this.quizGenerator = new QuizGenerator(new PokemonDatabase(), new QuestionBuilder());
+        this.quizProctor = new QuizProctor();
     }
 
     async handle(handlerInput: HandlerInput): Promise<Response> {
-        console.log("Handling QuizIntent...");
+        console.trace();
 
+        // Check whether there is any existing session state
         let state: SessionState | null = this.getSessionState(handlerInput);
         if (state?.QuestionsAnswered) {
             console.log("Session state already exists. Reprompting player with current question.");
 
             // If there is already session state, we shouldn't be starting a new quiz.
             // Reprompt with the current question.
+            const quizStartedIntro = "You've already started a quiz."
+            const questionPrompt = state.Questions[state.QuestionsAnswered].Prompt;
             return handlerInput.responseBuilder
-                .speak("You've already started a quiz.")
-                .reprompt(this.getCurrentQuestion(state))
+                .speak(`${quizStartedIntro} ${questionPrompt}`)
+                .reprompt(questionPrompt)
                 .getResponse();
         }
 
+        // Generate quiz and set initial session state
         const questions: Question[] = await this.quizGenerator.Generate(this.NumQuestions);
-
-        // Create initial session state to attach to response
         state = {
             CorrectAnswers: 0,
             Questions: questions,
@@ -46,17 +54,6 @@ export class QuizIntentHandler extends RequestHandlerBase {
         };
         this.updateSessionState(handlerInput, state);
 
-        // Ask the first question
-        const nextQuestionIntro = `Here's question ${state.QuestionsAnswered + 1}.`;
-        const nextQuestion = state.Questions[state.QuestionsAnswered].Prompt;
-        const speech = `${nextQuestionIntro} ${nextQuestion}`;
-        return handlerInput.responseBuilder
-            .speak(speech)
-            .reprompt(nextQuestion)
-            .getResponse();
-    }
-
-    private getCurrentQuestion(state: SessionState): string {
-        return state.Questions[state.QuestionsAnswered].Prompt;
+        return this.quizProctor.HandleStartQuiz(handlerInput);
     }
 }
