@@ -25,7 +25,7 @@ export class QuizIntentHandler extends RequestHandlerBase {
         console.log("Handling QuizIntent...");
 
         let state: SessionState | null = this.getSessionState(handlerInput);
-        if (state) {
+        if (state?.QuestionsAnswered) {
             console.log("Session state already exists. Reprompting player with current question.");
 
             // If there is already session state, we shouldn't be starting a new quiz.
@@ -39,19 +39,20 @@ export class QuizIntentHandler extends RequestHandlerBase {
         const questions: Question[] = await this.quizGenerator.Generate(this.NumQuestions);
 
         // Create initial session state to attach to response
-        state = this.updateSessionState(handlerInput, {
+        state = {
             CorrectAnswers: 0,
             Questions: questions,
             QuestionsAnswered: 0
-        });
-        if (!state) {
-            throw new Error("Failed to update state.");
-        }
+        };
+        this.updateSessionState(handlerInput, state);
 
         // Ask the first question
+        const nextQuestionIntro = `Here's question ${state.QuestionsAnswered + 1}.`;
+        const nextQuestion = state.Questions[state.QuestionsAnswered].Prompt;
+        const speech = `${nextQuestionIntro} ${nextQuestion}`;
         return handlerInput.responseBuilder
-            .speak(`Here's question 1.`)
-            .reprompt(this.getCurrentQuestion(state))
+            .speak(speech)
+            .reprompt(nextQuestion)
             .getResponse();
     }
 

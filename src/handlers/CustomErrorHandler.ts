@@ -11,7 +11,7 @@ export class CustomErrorHandler implements ErrorHandler {
 
         const request = handlerInput.requestEnvelope.request;
 
-        console.log(`Error handled: ${error.message || error}`);
+        console.log(error);
         console.log(
             `Original Request was: ${JSON.stringify(request, null, 2)}`
         );

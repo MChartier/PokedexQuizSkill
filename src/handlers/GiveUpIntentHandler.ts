@@ -25,20 +25,14 @@ export class GiveUpIntentHandler extends RequestHandlerBase {
             throw new Error("Invalid IntentRequest");
         }
 
-        let state: SessionState | null = this.getSessionState(handlerInput);
+        const state: SessionState | null = this.getSessionState(handlerInput);
         if (!state) {
             throw new Error("Failed to read session state.");
         }
 
         // Update state to proceed to the next question
-        state = this.updateSessionState(handlerInput, {
-            CorrectAnswers: state.CorrectAnswers,
-            Questions: state.Questions,
-            QuestionsAnswered: state.QuestionsAnswered + 1
-        });
-        if (!state) {
-            throw new Error("Failed to update session state.");
-        }
+        state.QuestionsAnswered++;
+        this.updateSessionState(handlerInput, state);
 
         // TODO: Avoid code duplication between this and AnswerIntentHandler
         // Tell the player the correct answer

@@ -78,14 +78,12 @@ export default class PokemonDatabase {
     }
 
     private async getPokemonByNumbers(pokemonNumbers: number[]): Promise<Pokemon[]> {        
-        const keys: Key[] = pokemonNumbers.map<Key>(num => {
+        const keys: object[] = Array.from(pokemonNumbers.map<object>(pkmn => {
             return {
-                "Id": {
-                    "N": num.toString()
-                }
-            }
-        });
-        const params: BatchGetItemInput = {
+                "Id": pkmn
+            };
+        }));
+        const params = {
             RequestItems: {
                 "PokemonDescriptions": {
                     Keys: keys

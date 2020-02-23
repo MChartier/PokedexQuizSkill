@@ -25,7 +25,7 @@ export class AnswerIntentHandler extends RequestHandlerBase {
             throw new Error("Invalid IntentRequest");
         }
 
-        let state: SessionState | null = this.getSessionState(handlerInput);
+        const state: SessionState | null = this.getSessionState(handlerInput);
         if (!state) {
             throw new Error("Failed to read session state.");
         }
@@ -37,14 +37,11 @@ export class AnswerIntentHandler extends RequestHandlerBase {
         const isAnswerCorrect: boolean = pokemonName == correctAnswer;
 
         // Update state based on whether the player got the answer right
-        state = this.updateSessionState(handlerInput, {
-            CorrectAnswers: isAnswerCorrect ? state.CorrectAnswers + 1 : state.CorrectAnswers,
-            Questions: state.Questions,
-            QuestionsAnswered: state.QuestionsAnswered + 1
-        });
-        if (!state) {
-            throw new Error("Failed to update session state.");
+        if (isAnswerCorrect) {
+            state.CorrectAnswers++;
         }
+        state.QuestionsAnswered++;
+        this.updateSessionState(handlerInput, state);
 
         // Tell the player that they got the answer correct, or what the actual answer was
         const answerResponse: string = isAnswerCorrect ?

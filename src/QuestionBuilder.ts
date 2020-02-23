@@ -27,7 +27,7 @@ export default class QuestionBuilder {
      */
     private generatePrompt(pokemon: Pokemon): string {
         // Get a random Pokedex description for the given Pokemon
-        const description: string = pokemon.Descriptions[Math.random() * pokemon.Descriptions.length];
+        const description: string = pokemon.Descriptions[Math.floor(Math.random() * pokemon.Descriptions.length)];
         
         // Remove any reference to the Pokemon species by name from the description
         // E.g. "Pikachu is yellow." -> "This pokemon is yellow."
