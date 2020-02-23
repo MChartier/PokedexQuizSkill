@@ -1,0 +1,43 @@
+{
+    "name": "pokedexquizskill",
+    "version": "1.0.0",
+    "description": "Pokedex Quiz (Unofficial) Skill for Alexa",
+    "main": "index.js",
+    "scripts": {
+        "build": "tsc -b tsconfig.json",
+        "clean": "tsc -b tsconfig.json --clean",
+        "coverage": "jest --coverage",
+        "lint": "eslint . --ext .js,.ts",
+        "pack": "npm-pack-zip",
+        "test": "jest --config jest.config.js",
+        "typecheck": "tsc -p tsconfig.json --noEmit",
+        "watch": "tsc --watch"
+    },
+    "author": "Matthew Chartier",
+    "license": "MIT",
+    "repository": "git://github.com/MChartier/PokedexQuizSkill",
+    "dependencies": {
+        "ask-sdk": "^2.7.0",
+        "aws-sdk": "^2.610.0"
+    },
+    "devDependencies": {
+        "@types/jest": "^24.0.18",
+        "@types/node": "^13.7.1",
+        "@typescript-eslint/eslint-plugin": "^2.3.3",
+        "@typescript-eslint/parser": "^2.3.3",
+        "dts-gen": "^0.5.8",
+        "eslint": "^6.8.0",
+        "jest": "^24.9.0",
+        "npm-pack-zip": "^1.2.7",
+        "ts-jest": "^24.1.0",
+        "typescript": "^3.6.4"
+    },
+    "bundledDependencies": [
+        "ask-sdk",
+        "aws-sdk"
+    ],
+    "files": [
+        "dist/src/**"
+    ],
+    "private": false
+}

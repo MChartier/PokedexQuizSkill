@@ -1,0 +1,13 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Deploy to Dev",
+            "type": "shell",
+            "command": "aws lambda update-function-code --function-name pokedex-quiz-skill-dev --zip-file fileb://pokedexquizskill.zip",
+            "problemMatcher": []
+        }
+    ]
+}
