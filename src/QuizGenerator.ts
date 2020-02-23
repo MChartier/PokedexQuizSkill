@@ -10,6 +10,11 @@ export default class QuizGenerator {
     private pokemonDatabase: PokemonDatabase;
     private questionBuilder: QuestionBuilder;
     
+    /**
+     * Constructs an instance of QuizGenerator.
+     * @param pokemonDatabase Instance of PokemonDatabase used to retrieve metadata for Pokemon species by number.
+     * @param questionBuilder Instance of QuestionBuilder used to construct questions given Pokemon objects.
+     */
     constructor(pokemonDatabase: PokemonDatabase, questionBuilder: QuestionBuilder) {
         this.pokemonDatabase = pokemonDatabase;
         this.questionBuilder = questionBuilder;

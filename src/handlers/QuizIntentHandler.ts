@@ -1,5 +1,5 @@
 import { HandlerInput } from "ask-sdk";
-import { Response, IntentRequest } from "ask-sdk-model";
+import { Response } from "ask-sdk-model";
 import { RequestHandlerBase } from "./RequestHandlerBase";
 import PokemonDatabase from "../database/PokemonDatabase";
 import SessionState from "../models/SessionState";
@@ -22,19 +22,15 @@ export class QuizIntentHandler extends RequestHandlerBase {
     }
 
     async handle(handlerInput: HandlerInput): Promise<Response> {
-        console.log("Handling QuizIntent.");
-
-        const responseBuilder = handlerInput.responseBuilder;
-        const intentRequest: IntentRequest = handlerInput.requestEnvelope.request as IntentRequest;
-        if (!intentRequest || !intentRequest.intent || !intentRequest.intent.slots) {
-            throw "Invalid IntentRequest";
-        }
+        console.log("Handling QuizIntent...");
 
         let state: SessionState | null = this.getSessionState(handlerInput);
         if (state) {
+            console.log("Session state already exists. Reprompting player with current question.");
+
             // If there is already session state, we shouldn't be starting a new quiz.
             // Reprompt with the current question.
-            return responseBuilder
+            return handlerInput.responseBuilder
                 .speak("You've already started a quiz.")
                 .reprompt(this.getCurrentQuestion(state))
                 .getResponse();
@@ -49,11 +45,11 @@ export class QuizIntentHandler extends RequestHandlerBase {
             QuestionsAnswered: 0
         });
         if (!state) {
-            throw "Failed to update state.";
+            throw new Error("Failed to update state.");
         }
 
         // Ask the first question
-        return responseBuilder
+        return handlerInput.responseBuilder
             .speak(`Here's question 1.`)
             .reprompt(this.getCurrentQuestion(state))
             .getResponse();

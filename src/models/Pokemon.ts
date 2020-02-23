@@ -1,3 +1,6 @@
+/**
+ * Interface containing data describing a species of Pokemon.
+ */
 export default interface Pokemon {
     /**
      * The name of the Pokemon species.

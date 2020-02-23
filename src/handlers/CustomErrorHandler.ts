@@ -7,9 +7,11 @@ export class CustomErrorHandler implements ErrorHandler {
     }
 
     handle(handlerInput: HandlerInput, error: Error): Response {
+        console.log("Handling error...");
+
         const request = handlerInput.requestEnvelope.request;
 
-        console.log(`Error handled: ${error.message}`);
+        console.log(`Error handled: ${error.message || error}`);
         console.log(
             `Original Request was: ${JSON.stringify(request, null, 2)}`
         );

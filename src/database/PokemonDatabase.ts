@@ -1,5 +1,6 @@
 import Pokemon from "../models/Pokemon";
-import { DocumentClient, GetItemOutput, BatchGetItemOutput } from "aws-sdk/clients/dynamodb";
+import { DocumentClient, GetItemOutput, BatchGetItemOutput, BatchGetItemInput, Key } from "aws-sdk/clients/dynamodb";
+import DynamoDB = require("aws-sdk/clients/dynamodb");
 
 export default class PokemonDatabase {
 
@@ -62,7 +63,7 @@ export default class PokemonDatabase {
             TableName: "PokemonDescriptions",
             Key: { 
                 "Id" : pokemonNumber
-              }
+            }
         };
 
         const response: GetItemOutput = await this.docClient.get(params).promise();
@@ -76,15 +77,15 @@ export default class PokemonDatabase {
         return this.rowToPokemon(response.Item);
     }
 
-    private async getPokemonByNumbers(pokemonNumbers: number[]): Promise<Pokemon[]> {
-        const keys: object[] = [];
-        for (const num of pokemonNumbers) {
-            keys.push({
-                "Id": { "N": num }
-            });
-        }
-        
-        const params = {
+    private async getPokemonByNumbers(pokemonNumbers: number[]): Promise<Pokemon[]> {        
+        const keys: Key[] = pokemonNumbers.map<Key>(num => {
+            return {
+                "Id": {
+                    "N": num.toString()
+                }
+            }
+        });
+        const params: BatchGetItemInput = {
             RequestItems: {
                 "PokemonDescriptions": {
                     Keys: keys
@@ -92,6 +93,7 @@ export default class PokemonDatabase {
             }
         };
 
+        console.log(JSON.stringify(params));
         const response: BatchGetItemOutput = await this.docClient.batchGet(params).promise();
         if (!response || !response.Responses) {
             console.log("Invalid response from DynamoDB");
