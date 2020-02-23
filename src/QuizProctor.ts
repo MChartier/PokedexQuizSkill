@@ -45,7 +45,7 @@ export default class QuizProctor {
             "That's right!" : 
             `That's not right. The correct answer was: ${correctAnswer}.`;
 
-        return this.buildAnswerResponse(handlerInput, answerResponseIntro);
+        return this.ReadNextQuestion(handlerInput, answerResponseIntro);
     }
 
     /**
@@ -71,57 +71,48 @@ export default class QuizProctor {
         const correctAnswer = state.Questions[state.QuestionsAnswered].Answer;
         const answerResponseIntro = `Okay, I'll tell you the answer. The correct answer was: ${correctAnswer}.`;
 
-        return this.buildAnswerResponse(handlerInput, answerResponseIntro);
+        return this.ReadNextQuestion(handlerInput, answerResponseIntro);
     }
 
-    public HandleStartQuiz(handlerInput: HandlerInput): Response {
-        console.trace();
-
-        // Get current SessionState
-        const state: SessionState | null = this.getSessionState(handlerInput);
-        if (!state) {
-            throw new Error("Failed to read session state.");
-        }
-        
-        // Start the quiz and ask the first question
-        const quizIntro = `Let's take a quiz! I'll ask you ${state.Questions.length} questions.`;
-        const questionIntro = "Here's question 1.";
-        const questionPrompt = state.Questions[state.QuestionsAnswered].Prompt;
-        const speech = `${quizIntro} ${questionIntro} ${questionPrompt}`;
-        return handlerInput.responseBuilder
-            .speak(speech)
-            .reprompt(questionPrompt)
-            .getResponse();
-    }
-
-    private buildAnswerResponse(handlerInput: HandlerInput, answerResponseIntro: string): Response {
+    public ReadNextQuestion(handlerInput: HandlerInput, intro: string): Response {
         // Get current SessionState
         const state: SessionState | null = this.getSessionState(handlerInput);
         if (!state) {
             throw new Error("Failed to read session state.");
         }
 
-        if (state.QuestionsAnswered < state.Questions.length) {
-            // If the quiz isn't over yet, acknowledge answer and ask the next question
-            const nextQuestionIntro = `Here's question ${state.QuestionsAnswered + 1}.`;
-            const nextQuestion = state.Questions[state.QuestionsAnswered].Prompt;
-            const speech = `${answerResponseIntro} ${nextQuestionIntro} ${nextQuestion}`;
-            return handlerInput.responseBuilder
-                .speak(speech)
-                .reprompt(nextQuestion)
-                .getResponse();
+        if (state.QuestionsAnswered == state.Questions.length) {
+            // If we've finished the quiz, read the results and end the quiz
+            return this.ReadSummary(handlerInput, intro);
         }
         else {
-            // Generate a response summarizing the results of the quiz and end the session
-            const summary = `You answered ${state.CorrectAnswers} out of ${state.QuestionsAnswered} correctly.`;
-            const assessment = this.getAssessment(state.CorrectAnswers, state.QuestionsAnswered);
-            const outro = "Thanks for playing!";
-            const speech = `${answerResponseIntro} ${summary} ${assessment} ${outro}`;
+            // Ask the next question
+            const questionIntro = `Here's question ${state.QuestionsAnswered + 1}.`;
+            const questionPrompt = state.Questions[state.QuestionsAnswered].Prompt;
+            const speech = `${intro} ${questionIntro} ${questionPrompt}`;
             return handlerInput.responseBuilder
                 .speak(speech)
-                .withShouldEndSession(true)
+                .reprompt(questionPrompt)
                 .getResponse();
         }
+    }
+
+    public ReadSummary(handlerInput: HandlerInput, intro: string): Response {
+        // Get current SessionState
+        const state: SessionState | null = this.getSessionState(handlerInput);
+        if (!state) {
+            throw new Error("Failed to read session state.");
+        }
+
+        // Generate a response summarizing the results of the quiz and end the session
+        const summary = `You answered ${state.CorrectAnswers} out of ${state.QuestionsAnswered} correctly.`;
+        const assessment = this.getAssessment(state.CorrectAnswers, state.QuestionsAnswered);
+        const outro = "Thanks for playing!";
+        const speech = `${intro} ${summary} ${assessment} ${outro}`;
+        return handlerInput.responseBuilder
+            .speak(speech)
+            .withShouldEndSession(true)
+            .getResponse();
     }
 
     private getAssessment(numCorrect: number, numQuestions: number): string {

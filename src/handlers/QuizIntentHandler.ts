@@ -32,28 +32,22 @@ export class QuizIntentHandler extends RequestHandlerBase {
 
         // Check whether there is any existing session state
         let state: SessionState | null = this.getSessionState(handlerInput);
-        if (state?.QuestionsAnswered) {
-            console.log("Session state already exists. Reprompting player with current question.");
 
-            // If there is already session state, we shouldn't be starting a new quiz.
-            // Reprompt with the current question.
-            const quizStartedIntro = "You've already started a quiz."
-            const questionPrompt = state.Questions[state.QuestionsAnswered].Prompt;
-            return handlerInput.responseBuilder
-                .speak(`${quizStartedIntro} ${questionPrompt}`)
-                .reprompt(questionPrompt)
-                .getResponse();
+        if (!state?.Questions) {
+            // Generate quiz and set initial session state
+            const questions: Question[] = await this.quizGenerator.Generate(this.NumQuestions);
+            state = {
+                CorrectAnswers: 0,
+                Questions: questions,
+                QuestionsAnswered: 0
+            };
+            this.updateSessionState(handlerInput, state);
+
+            const quizIntro = `Let's take a quiz! I'll ask you ${this.NumQuestions} questions.`;
+            return this.quizProctor.ReadNextQuestion(handlerInput, quizIntro);
         }
-
-        // Generate quiz and set initial session state
-        const questions: Question[] = await this.quizGenerator.Generate(this.NumQuestions);
-        state = {
-            CorrectAnswers: 0,
-            Questions: questions,
-            QuestionsAnswered: 0
-        };
-        this.updateSessionState(handlerInput, state);
-
-        return this.quizProctor.HandleStartQuiz(handlerInput);
+        else {
+            return this.quizProctor.ReadNextQuestion(handlerInput, "You've already started a quiz.");
+        }
     }
 }
