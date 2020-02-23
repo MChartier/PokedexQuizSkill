@@ -68,7 +68,7 @@ export default class QuizProctor {
         this.updateSessionState(handlerInput, state);
 
         // Tell the player the correct answer
-        const correctAnswer = state.Questions[state.QuestionsAnswered].Answer;
+        const correctAnswer = state.Questions[state.QuestionsAnswered - 1].Answer;
         const answerResponseIntro = `Okay, I'll tell you the answer. The correct answer was: ${correctAnswer}.`;
 
         return this.ReadNextQuestion(handlerInput, answerResponseIntro);
